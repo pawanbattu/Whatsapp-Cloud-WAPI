@@ -17,6 +17,7 @@ from minio.error import S3Error
 from django.conf import settings
 from minio import Minio
 import mimetypes
+from django.core.management import call_command
 
 
 @shared_task(bind=True, max_retries=1) 
@@ -456,7 +457,7 @@ def process_whatsapp_media_task(media_url: str, mime_type: str, whatsapp_client:
         return minio_url
 
     except Exception as exc:
-        app_logs("ERROR", "Failed to process_whatsapp_media_task ", {"error": str(traceback.format_exc()), "inputData": media_url})
+        app_logs("EXCEPTION", "Failed to process_whatsapp_media_task ", {"error": str(traceback.format_exc()), "inputData": media_url})
         
         # 2. Explicitly tell Celery to retry this task. 
         # countdown=60 means it will wait 60 seconds before trying again.
@@ -465,3 +466,15 @@ def process_whatsapp_media_task(media_url: str, mime_type: str, whatsapp_client:
     finally:        
         if downloaded_file_path and os.path.exists(downloaded_file_path):
             os.remove(downloaded_file_path)
+            
+@shared_task
+def backup_database():
+    """
+    Creates a backup of the MySQL database and uploads it to MinIO.
+    """
+    try:
+        call_command("dbbackup", clean=True)
+        app_logs("INFO", "database backup uploaded to MinIO successfully")
+    except Exception as e:
+        app_logs("EXCEPTION", "Database backup failed", {"error": str(traceback.format_exc())})
+        

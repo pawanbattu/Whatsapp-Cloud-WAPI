@@ -19,10 +19,15 @@ from django.urls import path
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.permissions import AllowAny
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('WhatsPanel.urls'))
+    path('', include('WhatsPanel.urls')),
+    path(f'api/{settings.API_VERSION}/schema/', SpectacularAPIView.as_view(permission_classes=[AllowAny]), name='schema'),
+    path(f'api/{settings.API_VERSION}/docs/swagger/', SpectacularSwaggerView.as_view(url_name='schema', permission_classes=[AllowAny]), name='swagger-ui'),
+    path(f'api/{settings.API_VERSION}/docs/redoc/', SpectacularRedocView.as_view(url_name='schema', permission_classes=[AllowAny]), name='redoc'),
 ]
 
 if settings.DEBUG:

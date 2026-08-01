@@ -1,0 +1,7 @@
+openapi: 3.0.3
+info:
+  title: Whatsapp-Cloud-WAPI
+  version: 1.0.0
+  description: REST API documentation for managing WhatsApp Cloud API interactions using WAPI.
+paths: {}
+components: {}

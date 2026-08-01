@@ -12,6 +12,7 @@ try:
     MySQLdb.connect(host=os.environ.get('DB_HOST','mysql'), user=os.environ.get('DB_USER','root'),
                      passwd=os.environ.get('DB_PASSWORD',''), port=int(os.environ.get('DB_PORT',3306)))
 except Exception as e:
+    print('MySQL Connection Error: {}'.format(e))
     sys.exit(1)
 "; do
   sleep 2
